@@ -13,8 +13,12 @@ class MainScene < Scene
   end
 
   def render
-    (0..WORLD_WIDTH).select { |x| x % 64 == 0 }.each do |x|
-      (0..WORLD_HEIGHT).select { |y| y % 64 == 0 }.each do |y|
+    (0..WORLD_WIDTH).each do |x|
+      next if x % 64 != 0
+
+      (0..WORLD_HEIGHT).each do |y|
+        next if y % 64 != 0
+
         outputs.primitives << { x: x, y: y, w: 64, h: 64, tile_x: 64, tile_y: 64, tile_w: 64, tile_h: 64, path: "sprites/ground.png", primitive_marker: :sprite }
         # outputs.primitives << { x: x, y: y, w: 64, h: 64, r: 0, g: 0, b: 0, a: 100, primitive_marker: :border }
 
@@ -51,6 +55,12 @@ class MainScene < Scene
       # else
       #   player.attack if input.space
       # end
+    end
+  end
+
+  def update
+    state.players.values.each_with_index do |player, index|
+      camera_manager.cameras[index].x, camera_manager.cameras[index].y = player.x, player.y
     end
   end
 end

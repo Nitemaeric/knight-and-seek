@@ -24,6 +24,7 @@ class SceneManager < BaseManager
   def render
     return unless current_scene
 
+    current_scene.perform_phase(:render)
     current_scene.camera_manager.render
   end
 
@@ -37,7 +38,7 @@ class SceneManager < BaseManager
   def update
     return unless current_scene
 
-    current_scene.perform_phase(:render)
+    current_scene.perform_phase(:update)
     current_scene.camera_manager.update
   end
 

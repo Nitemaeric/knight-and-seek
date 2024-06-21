@@ -38,7 +38,7 @@ class CameraManager
     cameras.each_with_index do |camera, index|
       camera.render
 
-      scn = scene.game.outputs.borders << {
+      scene.game.outputs.borders << {
         x: camera.screen_x,
         y: camera.screen_y,
         w: camera.screen_w,
