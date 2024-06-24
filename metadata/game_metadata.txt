@@ -1,6 +1,6 @@
 # Remove the pound sign and leading space for the properties below before publishing your game.
 devid=Nitemaeric
-devtitle=Daniel Dye
+devtitle=Nitemaeric
 gameid=knight-and-seek
 gametitle=Knight and Seek
 version=0.1
