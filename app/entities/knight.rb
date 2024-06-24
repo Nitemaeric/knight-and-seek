@@ -1,8 +1,7 @@
-class Player
+class Knight
   attr_sprite
 
-  attr_reader :color
-  attr_accessor :action
+  attr_accessor :color, :action
 
   def initialize(x:, y:, color:)
     @x = x

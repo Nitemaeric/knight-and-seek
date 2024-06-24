@@ -1,45 +1,45 @@
-class SceneManager < BaseManager
+class SceneManager < Node
   attr_reader :current_scene
 
-  def add_scene(key, scene_class)
+  def register_scene(key, scene_class)
     scenes[key] = scene_class
   end
 
-  def set_scene(key, **options)
-    @current_scene ||= scenes[key].new(game, key, **options)
+  def initial_scene(key, **config)
+    @current_scene ||= scenes[key].new(key, **config)
   end
 
-  def change_scene(key, **options)
-    @options = options
-    @current_scene = scenes[key].new(game, key, **options)
+  def set_scene(key, **config)
+    puts "SceneManger#set_scene(#{key}, #{config})"
+    @current_scene = scenes[key].new(key, **config)
   end
 
   def setup
     return unless current_scene
 
-    current_scene.perform_phase(:setup, @options)
-    current_scene.camera_manager.setup
-  end
-
-  def render
-    return unless current_scene
-
-    current_scene.perform_phase(:render)
-    current_scene.camera_manager.render
+    current_scene.perform(:setup)
+    current_scene.camera_manager.perform(:setup)
   end
 
   def input
     return unless current_scene
 
-    current_scene.perform_phase(:input)
-    current_scene.camera_manager.input
+    current_scene.perform(:input)
+    current_scene.camera_manager.perform(:input)
   end
 
   def update
     return unless current_scene
 
-    current_scene.perform_phase(:update)
-    current_scene.camera_manager.update
+    current_scene.perform(:update)
+    current_scene.camera_manager.perform(:update)
+  end
+
+  def render
+    return unless current_scene
+
+    current_scene.perform(:render)
+    current_scene.camera_manager.perform(:render)
   end
 
   private

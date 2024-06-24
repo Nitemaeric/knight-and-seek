@@ -2,65 +2,34 @@ require_relative "managers/debug_manager"
 require_relative "managers/scene_manager"
 
 module Conjuration
-  class Game
+  class Game < Node
     attr_gtk
 
-    attr_reader :debug_manager, :scene_manager, :players
+    attr_accessor :debug_manager, :scene_manager
 
     def initialize(args)
-      self.args = args
-
-      @players = []
-      @debug_manager = DebugManager.new(self)
-      @scene_manager = SceneManager.new(self)
+      super(
+        args: args,
+        debug_manager: DebugManager.new,
+        scene_manager: SceneManager.new
+      )
     end
 
     def tick
-      perform_phase(:setup)  { setup }
-      perform_phase(:render) { render }
-      perform_phase(:input)  { input }
-      perform_phase(:update) { update }
+      perform(:setup)  { setup }
+      perform(:input)  { input }
+      perform(:update) { update }
+      perform(:render) { render }
     end
-
-    # =====
-    # Abstract methods
-    # =====
-
-    # Setup your data structures here.
-    #
-    # Read/Write state.
-    #
-    # @methods state
-    def setup; end
-
-    # Render your data structures here
-    #
-    # Read state only.
-    #
-    # @methods outputs
-    def render; end
-
-    # Handle user input here
-    #
-    # Read/Write state.
-    #
-    # @methods inputs
-    # @methods state
-    def input; end
-
-    # Ongoing game loop logic goes here
-    #
-    # Read/Write state.
-    #
-    # @methods state
-    def update; end
 
     private
 
-    def perform_phase(phase_name)
-      [debug_manager, scene_manager].each { |manager| manager.send(phase_name) }
-
+    def perform(phase_name)
       yield
+
+      [scene_manager, debug_manager].each do |manager|
+        manager.perform(phase_name)
+      end
     end
   end
 end
