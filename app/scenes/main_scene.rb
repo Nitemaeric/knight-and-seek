@@ -8,6 +8,16 @@ class MainScene < Scene
     state.columns = 24
     state.tile_size = 64
 
+    state.tiles ||= Array.new(state.rows) { Array.new(state.columns) }
+
+    state.rows.times do |row|
+      state.columns.times do |column|
+        state.tiles[row][column] = {
+          tile_x: [64, 384].sample
+        }
+      end
+    end
+
     self.width = state.columns * state.tile_size
     self.height = state.rows * state.tile_size
 
@@ -36,21 +46,18 @@ class MainScene < Scene
   end
 
   def render
-    outputs.primitives << (0..state.rows).flat_map do |row|
-      (0..state.columns).map do |column|
-        {
-          x: column * state.tile_size,
-          y: row * state.tile_size,
-          w: state.tile_size,
-          h: state.tile_size,
-          tile_x: 64,
-          tile_y: 64,
-          tile_w: state.tile_size,
-          tile_h: state.tile_size,
-          path: "sprites/ground.png",
-          primitive_marker: :sprite
-        }
-      end
+    outputs.primitives << state.tiles.map_2d do |row, column, tile|
+      {
+        x: column * state.tile_size,
+        y: row * state.tile_size,
+        w: state.tile_size,
+        h: state.tile_size,
+        tile_y: 64,
+        tile_w: state.tile_size,
+        tile_h: state.tile_size,
+        path: "sprites/ground.png",
+        primitive_marker: :sprite
+      }.merge(tile)
     end
 
     outputs.primitives << state.players.map do |player|

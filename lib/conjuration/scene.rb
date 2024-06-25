@@ -1,10 +1,9 @@
 require_relative "managers/camera_manager"
 
 class Scene < Node
-  attr_accessor :key, :camera_manager, :config
-  attr_reader :width, :height
+  attr_accessor :key, :camera_manager, :config, :width, :height
 
-  delegate :inputs, :grid, :layout, :scene_manager, :input_manager, to: :game
+  delegate :inputs, :grid, :layout, :scene_manager, :input_manager, :debug_manager, to: :game
 
   def initialize(key, camera_count: 1, **config)
     super(
@@ -17,14 +16,6 @@ class Scene < Node
     self.camera_manager = CameraManager.new(scene: self, camera_count: camera_count)
   end
 
-  def width=(value)
-    @width = outputs.width = value
-  end
-
-  def height=(value)
-    @height = outputs.height = value
-  end
-
   def state
     $game.state[key.to_sym]
   end
@@ -33,18 +24,24 @@ class Scene < Node
     $game.outputs[:scene]
   end
 
-  def debug
-    []
+  def debug_inspect
+    "#<#{self.class.name}:0x#{object_id.to_s(16)} size: #{width}x#{height}>"
   end
 
   private
 
-  def perform_setup
-    outputs.transient!
-  end
-
   def perform_render?
     !setup_at.nil?
+  end
+
+  def perform_update?
+    !setup_at.nil?
+  end
+
+  def perform_update
+    outputs.transient!
+    outputs.w = width
+    outputs.h = height
   end
 
   def game

@@ -17,7 +17,7 @@ class MainMenuScene < Scene
         remove_player(keymap)
       end
 
-      if keymap.key_down(:start) && state.players.length > 1
+      if keymap.key_down(:start) && ready_to_start?
         scene_manager.register_scene(:main, MainScene)
         scene_manager.set_scene(:main, camera_count: state.players.length, players: state.players)
       end
@@ -95,5 +95,11 @@ class MainMenuScene < Scene
 
   def column_center_x(index)
     width / 4 * (index + 1) - width / 8
+  end
+
+  def ready_to_start?
+    minimum_players = $gtk.production? ? 2 : 1
+
+    state.players.length >= minimum_players
   end
 end
