@@ -18,11 +18,11 @@ class DebugManager < Node
 
     debug_strings ||= []
 
-    debug_strings << "current_scene: #{$game.scene_manager.current_scene}"
+    debug_strings << "current_scene: #{$game.scene_manager.current_scene} [#{$game.scene_manager.current_scene.width},#{$game.scene_manager.current_scene.height}]"
 
     $game.scene_manager.current_scene.camera_manager.cameras.each_with_index do |camera, index|
       rect = "[#{camera.x.to_i},#{camera.y.to_i},#{camera.w.to_i},#{camera.h.to_i}]"
-      focus = "(#{camera.focus_x.to_i},#{camera.focus_x.to_i}@#{camera.zoom.to_sf})"
+      focus = "(#{camera.focus_x.to_i},#{camera.focus_y.to_i}@#{camera.zoom.to_sf})"
       debug_strings << "camera[#{index}]: #{rect} #{focus}"
     end
 

@@ -1,7 +1,7 @@
 class Knight
   attr_sprite
 
-  attr_accessor :color, :action
+  attr_accessor :color, :action, :speed
 
   def initialize(x:, y:, color:)
     @x = x
@@ -14,29 +14,19 @@ class Knight
     @action = :idle
     @anchor_x = 0.5
     @anchor_y = 0.5
+    @speed = 2.5
   end
 
-  def move_left
-    @x -= 2.5
-    @flip_horizontally = true
-    @action = :moving
+  def move_vector(vector)
+    vector = { x: vector.x * speed, y: vector.y * speed }
+
+    @x += vector.x
+    @y += vector.y
+    @action = vector.x.zero? && vector.y.zero? ? :idle : :moving
+    @flip_horizontally = vector.x.negative? unless vector.x.zero?
   end
 
-  def move_right
-    @x += 2.5
-    @flip_horizontally = false
-    @action = :moving
-  end
-
-  def move_up
-    @y += 2.5
-    @action = :moving
-  end
-
-  def move_down
-    @y -= 2.5
-    @action = :moving
-  end
+  def move_to(x:, y:); end
 
   def attack
     @attacking_at = $game.tick_count

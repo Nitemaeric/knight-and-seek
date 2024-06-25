@@ -4,7 +4,7 @@ class Scene < Node
   attr_accessor :key, :camera_manager, :config
   attr_reader :width, :height
 
-  delegate :inputs, :grid, :layout, :scene_manager, to: :game
+  delegate :inputs, :grid, :layout, :scene_manager, :input_manager, to: :game
 
   def initialize(key, camera_count: 1, **config)
     super(
@@ -15,8 +15,6 @@ class Scene < Node
     )
 
     self.camera_manager = CameraManager.new(scene: self, camera_count: camera_count)
-
-    outputs.transient!
   end
 
   def width=(value)
@@ -42,7 +40,7 @@ class Scene < Node
   private
 
   def perform_setup
-    @setup_at = game.tick_count
+    outputs.transient!
   end
 
   def perform_render?

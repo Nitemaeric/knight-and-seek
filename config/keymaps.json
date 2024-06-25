@@ -1,0 +1,32 @@
+{
+  "left_keyboard": {
+    "up": "w",
+    "down": "s",
+    "left": "a",
+    "right": "d",
+    "select": "g",
+    "back": "h",
+    "attack": "g",
+    "start": "space"
+  },
+  "right_keyboard": {
+    "up": "up_arrow",
+    "down": "down_arrow",
+    "left": "left_arrow",
+    "right": "right_arrow",
+    "select": "period",
+    "back": "forward_slash",
+    "attack": "period",
+    "start": "enter"
+  },
+  "controller": {
+    "up": "up",
+    "down": "down",
+    "left": "left",
+    "right": "right",
+    "select": "a",
+    "back": "b",
+    "attack": "a",
+    "start": "start"
+  }
+}

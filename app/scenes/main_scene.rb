@@ -11,12 +11,27 @@ class MainScene < Scene
     self.width = state.columns * state.tile_size
     self.height = state.rows * state.tile_size
 
-    state.players ||= config[:player_count].times.each_with_object({}) do |index, hash|
-      hash[index] = Knight.new(x: width / 2 * index + width / 4, y: height / 2, color: PLAYER_COLORS[index])
+    state.players ||= config[:players].map_with_index do |player, index|
+      {
+        keymap: player[:keymap],
+        character: Knight.new(x: width / 2 * index + width / 4, y: height / 2, color: PLAYER_COLORS[index])
+      }
+    end
 
+    state.players.each_with_index do |player, index|
       if camera_manager.cameras[index].nil?
-        camera_manager.add_camera(x: hash[index].x, y: hash[index].y)
+        camera_manager.add_camera(x: player.as_hash[:character].x, y: player.as_hash[:character].y)
       end
+    end
+  end
+
+  def input
+    input_manager.keymaps.each do |name, keymap|
+      player = state.players.find { |player| player[:keymap] == keymap }
+
+      next if player.nil?
+
+      player.character.move_vector(keymap.directional_vector)
     end
   end
 
@@ -38,35 +53,20 @@ class MainScene < Scene
       end
     end
 
-    outputs.primitives << state.players.map do |_, player|
-      player
-    end
-  end
-
-  def input
-    state.players.each do |index, player|
-      player.action = :idle
-
-      player.move_right if inputs.controllers[index].right
-      player.move_left  if inputs.controllers[index].left
-      player.move_up    if inputs.controllers[index].up
-      player.move_down  if inputs.controllers[index].down
-    end
-
-    if inputs.keyboard.key_up.escape
-      scene_manager.change_scene(:main_menu)
+    outputs.primitives << state.players.map do |player|
+      player.character
     end
   end
 
   def update
-    state.players.each do |index, player|
-      camera_manager.cameras[index].look_at(player)
+    state.players.each_with_index do |player, index|
+      camera_manager.cameras[index].look_at(player.character)
     end
   end
 
   def debug
-    state.players.map do |index, player|
-      "player[#{index}]: [#{player.x}, #{player.y}]"
+    state.players.map_with_index do |player, index|
+      "player[#{index}]: [#{player.character.x}, #{player.character.y}]"
     end
   end
 end

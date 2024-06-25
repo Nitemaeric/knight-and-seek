@@ -18,8 +18,10 @@ class Node
     send("perform_#{phase}") if respond_to?("perform_#{phase}")
     send(phase) if respond_to?(phase)
 
-    send("#{phase}_at=", $game.tick_count) if respond_to?("#{phase}_at")
+    send("#{phase}_at=", Kernel.tick_count) if respond_to?("#{phase}_at=")
   end
+
+  def perform_setup?; setup_at.nil?; end
 
   def merge!(**attributes)
     attributes.each do |key, value|

@@ -7,11 +7,12 @@ class SceneManager < Node
 
   def initial_scene(key, **config)
     @current_scene ||= scenes[key].new(key, **config)
+    setup
   end
 
   def set_scene(key, **config)
-    puts "SceneManger#set_scene(#{key}, #{config})"
     @current_scene = scenes[key].new(key, **config)
+    setup
   end
 
   def setup

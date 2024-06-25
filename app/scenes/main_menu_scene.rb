@@ -1,26 +1,27 @@
+require "app/keymap"
+
 class MainMenuScene < Scene
   PLAYER_COLORS = %w[blue red yellow purple]
 
   def setup
-    state.players ||= {}
+    state.players ||= []
   end
 
   def input
-    inputs.controllers.each_with_index do |controller, index|
-      if controller.key_down.a
-        state.players[index] = state.new_entity :player, controller_index: index, ready: true
-      end
-    end
+    input_manager.keymaps.each do |name, keymap|
+      player = state.players.find { |player| player[:keymap] == keymap }
 
-    state.players.each do |index, player|
-      if inputs.controllers[player.controller_index].key_down.b
-        state.players[index].ready = false
+      if keymap.key_down(:select) && player.nil?
+        add_player(keymap)
       end
 
-      # if state.players.length > 1 && inputs.controllers[player.controller_index].key_down.start
-      if inputs.controllers[player.controller_index].key_down.start
+      if keymap.key_down(:back) && player
+        remove_player(keymap)
+      end
+
+      if keymap.key_down(:start) && state.players.length > 1
         scene_manager.register_scene(:main, MainScene)
-        scene_manager.set_scene(:main, camera_count: 2, player_count: 2)
+        scene_manager.set_scene(:main, camera_count: state.players.length, players: state.players)
       end
     end
   end
@@ -41,11 +42,11 @@ class MainMenuScene < Scene
         path: "sprites/player/#{color}.png",
         anchor_x: 0.5,
         anchor_y: 0.5,
-        a: inputs.controllers[index].connected ? 255 : 192
+        a: state.players[index] ? 255 : 192
       }
     end
 
-    outputs.primitives << inputs.controllers.select(&:connected).map_with_index do |controller, index|
+    outputs.primitives << input_manager.keymaps.values.map_with_index do |controller, index|
       [
         {
           x: column_center_x(index),
@@ -60,7 +61,7 @@ class MainMenuScene < Scene
         {
           x: column_center_x(index),
           y: 120 - (($game.tick_count + 90 * index) % 360 * 3).sin * 2,
-          text: state.players[index] && state.players[index][:ready] ? "READY" : "Press A to join",
+          text: state.players[index] ? "READY" : "Press A to join",
           size_enum: 4,
           alignment_enum: 1,
           vertical_alignment_enum: 1,
@@ -70,7 +71,7 @@ class MainMenuScene < Scene
       ]
     end
 
-    if state.players.values.select { _1[:ready] }.length > 1
+    if state.players.length > 1
       outputs.labels << {
         x: 640,
         y: 60 - (($game.tick_count + 180) % 360 * 3).sin * 2,
@@ -83,6 +84,16 @@ class MainMenuScene < Scene
   end
 
   private
+
+  def add_player(keymap)
+    state.players.push({ keymap: keymap })
+  end
+
+  def remove_player(keymap)
+    state.players.find_index { _1[:keymap] == keymap }.then do |index|
+      state.players.delete_at(index)
+    end
+  end
 
   def column_center_x(index)
     width / 4 * (index + 1) - width / 8
