@@ -45,17 +45,31 @@ class DebugManager < Node
       x: 0,
       y: 0,
       w: current_scene.width,
-      h: outputs[:scene].h,
+      h: current_scene.height,
       path: :scene,
     }
     outputs[:scene_with_cameras].primitives << current_scene.camera_manager.cameras.map_with_index do |camera, index|
-      {
-        x: camera.x,
-        y: camera.y,
-        w: camera.w,
-        h: camera.h,
-        primitive_marker: :border
-      }
+      [
+        {
+          x: camera.focus_x,
+          y: camera.focus_y,
+          w: camera.w,
+          h: camera.h,
+          anchor_x: 0.5,
+          anchor_y: 0.5,
+          a: 128,
+          primitive_marker: :solid
+        },
+        {
+          x: camera.focus_x,
+          y: camera.focus_y,
+          text: index,
+          size_enum: 100,
+          alignment_enum: 1,
+          vertical_alignment_enum: 1,
+          primitive_marker: :label
+        }
+      ]
     end
 
     outputs.primitives << {
