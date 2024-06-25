@@ -1,5 +1,3 @@
-require "app/keymap"
-
 class MainMenuScene < Scene
   PLAYER_COLORS = %w[blue red yellow purple]
 
